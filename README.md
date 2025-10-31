@@ -473,27 +473,62 @@ pip install freqUI
 
 ### Common Issues
 
-1. **Installation Problems**
+1. **TA-Lib Installation Problems**
+   
+   If you get "Unable to locate package libta-lib-dev":
    ```bash
-   # If TA-Lib installation fails
-   sudo apt install build-essential
-   pip install --upgrade setuptools wheel
+   # Use the dedicated TA-Lib installer script
+   ./install_talib.sh
+   
+   # Or install from source manually:
+   wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
+   tar -xzf ta-lib-0.4.0-src.tar.gz
+   cd ta-lib/
+   ./configure --prefix=/usr/local
+   make
+   sudo make install
+   echo '/usr/local/lib' | sudo tee /etc/ld.so.conf.d/ta-lib.conf
+   sudo ldconfig
+   pip install TA-Lib
+   ```
+   
+   Alternative methods:
+   ```bash
+   # Try with conda (if available)
+   conda install -c conda-forge ta-lib
+   
+   # Or try pip with pre-compiled wheels
+   pip install --upgrade pip
+   pip install TA-Lib
    ```
 
-2. **API Connection Issues**
+2. **General Installation Problems**
+   ```bash
+   # If build tools are missing
+   sudo apt install build-essential
+   pip install --upgrade setuptools wheel
+   
+   # For permission issues
+   pip install --user freqtrade
+   ```
+
+3. **API Connection Issues**
    - Verify API keys are correct
    - Check IP whitelist settings
    - Ensure sufficient API rate limits
+   - Test with testnet first
 
-3. **Strategy Not Trading**
+4. **Strategy Not Trading**
    - Check if conditions are met
    - Verify pair whitelist
    - Check available balance
+   - Ensure dry_run is set correctly
 
-4. **Performance Issues**
+5. **Performance Issues**
    - Reduce number of pairs
    - Increase timeframe
    - Optimize strategy parameters
+   - Check system resources
 
 ### Log Analysis
 
