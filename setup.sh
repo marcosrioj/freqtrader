@@ -155,15 +155,24 @@ print_status "Starting system dependency installation..."
 install_system_deps
 install_talib
 
-# Check if freqtrade directory exists
-if [ ! -d "freqtrade" ]; then
+# Check if we're in a freqtrade project or need to clone
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+print_info "Script directory: $SCRIPT_DIR"
+
+# Check if we're already in a freqtrade directory (has setup.py or pyproject.toml)
+if [ -f "setup.py" ] || [ -f "pyproject.toml" ] || [ -f "freqtrade/__init__.py" ]; then
+    print_status "Freqtrade source detected in current directory"
+    FREQTRADE_DIR="."
+elif [ -d "freqtrade" ] && ([ -f "freqtrade/setup.py" ] || [ -f "freqtrade/pyproject.toml" ]); then
+    print_status "Freqtrade source detected in subdirectory"
+    FREQTRADE_DIR="freqtrade"
+else
     print_status "Cloning Freqtrade repository..."
     git clone https://github.com/freqtrade/freqtrade.git
-else
-    print_warning "Freqtrade directory already exists, skipping clone..."
+    FREQTRADE_DIR="freqtrade"
 fi
 
-cd freqtrade
+cd "$FREQTRADE_DIR"
 
 # Create virtual environment
 if [ ! -d "freqtrade-env" ]; then
